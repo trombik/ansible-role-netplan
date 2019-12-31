@@ -22,37 +22,14 @@ provisioner:
     - filter_plugins
 
 platforms:
-  - name: freebsd-12.0-amd64
-    driver:
-      box: trombik/ansible-freebsd-12.0-amd64
-      box_check_update: false
-    driver_config:
-      ssh:
-        shell: '/bin/sh'
-    provisioner:
-      extra_vars:
-        ansible_python_interpreter: '/usr/local/bin/python'
-
-  - name: openbsd-6.5-amd64
-    driver:
-      box: trombik/ansible-openbsd-6.5-amd64
-      box_check_update: false
-    driver_config:
-      ssh:
-        shell: '/bin/sh'
-    provisioner:
-      extra_vars:
-        ansible_python_interpreter: '/usr/local/bin/python3'
 
   - name: ubuntu-18.04-amd64
     driver:
       box: trombik/ansible-ubuntu-18.04-amd64
       box_check_update: false
-
-  - name: centos-7.4-x86_64
-    driver:
-      box: trombik/ansible-centos-7.4-x86_64
-      box_check_update: false
+      network:
+        - ["private_network", {ip: "192.168.20.100", auto_config: false}]
+        - ["private_network", {ip: "192.168.20.101", auto_config: false}]
 
 suites:
   - name: default
