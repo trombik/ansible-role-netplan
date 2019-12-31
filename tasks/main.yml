@@ -6,34 +6,40 @@
 - name: "Include install-{{ ansible_os_family }}.yml"
   include: "install-{{ ansible_os_family }}.yml"
 
-- name: "Create {{ template_role_config_dir }}"
-  file:
-    path: "{{ template_role_config_dir }}"
-    state: directory
+- name: Find netplan configuration file that are not managed by the role
+  find:
+    path: "{{ netplan_config_dir }}"
+    pattern: "*.yml,*.yaml"
+  register: __netplan_not_managed_files
 
-- name: "Create {{ template_role_config_file }}"
+- name: Remove unmanaged netplan files
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  with_items: "{{ __netplan_not_managed_files }}"
+  when:
+    - netplan_clean_config
+  notify: Generate netplan
+
+- name: Remove netplan_config
+  file:
+    path: "{{ netplan_config_dir }}/{{ item['name'] }}"
+    state: absent
+  with_items: "{{ netplan_config }}"
+  when:
+    - item['state'] == 'absent'
+  notify: Generate netplan
+
+- name: Create netplan_config
   template:
-    src: template_role.conf.j2
-    dest: "{{ template_role_config_file }}"
-  notify:
-    - Restart template_role_service
+    src: netplan.yaml.j2
+    dest: "{{ netplan_config_dir }}/{{ item['name'] }}"
+  with_items: "{{ netplan_config }}"
+  when:
+    - item['state'] == 'present'
+  notify: Generate netplan
 
-- name: "Add template_role_user to template_role_extra_groups"
-  user:
-    name: "{{ template_role_user }}"
-    append: yes
-    create_home: no
-    groups: "{{ template_role_extra_groups }}"
-
-- name: Create template_role_log_dir
-  file:
-    path: "{{ template_role_log_dir }}"
-    owner: "{{ template_role_user }}"
-    group: "{{ template_role_group }}"
-    mode: 0755
-    state: directory
-
-- name: Start template_role_service
-  service:
-    name: "{{ template_role_service }}"
-    state: started
+- name: Include flush_handlers.yml
+  include_tasks: flush_handlers.yml
+  when:
+    - netplan_force_flush_handlers

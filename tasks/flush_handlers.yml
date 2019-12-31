@@ -1,0 +1,4 @@
+---
+
+- name: Run flush_handlers
+  meta: flush_handlers
