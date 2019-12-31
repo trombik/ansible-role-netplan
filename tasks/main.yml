@@ -1,0 +1,39 @@
+---
+
+- name: "Include vars/{{ ansible_os_family }}.yml"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "Include install-{{ ansible_os_family }}.yml"
+  include: "install-{{ ansible_os_family }}.yml"
+
+- name: "Create {{ template_role_config_dir }}"
+  file:
+    path: "{{ template_role_config_dir }}"
+    state: directory
+
+- name: "Create {{ template_role_config_file }}"
+  template:
+    src: template_role.conf.j2
+    dest: "{{ template_role_config_file }}"
+  notify:
+    - Restart template_role_service
+
+- name: "Add template_role_user to template_role_extra_groups"
+  user:
+    name: "{{ template_role_user }}"
+    append: yes
+    create_home: no
+    groups: "{{ template_role_extra_groups }}"
+
+- name: Create template_role_log_dir
+  file:
+    path: "{{ template_role_log_dir }}"
+    owner: "{{ template_role_user }}"
+    group: "{{ template_role_group }}"
+    mode: 0755
+    state: directory
+
+- name: Start template_role_service
+  service:
+    name: "{{ template_role_service }}"
+    state: started

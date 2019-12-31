@@ -1,0 +1,19 @@
+---
+
+- name: Install template_role_extra_packages
+  openbsd_pkg:
+    name: "{{ template_role_extra_packages }}"
+    state: present
+
+# - name: Install template_role_package
+#   openbsd_pkg:
+#     name: "{{ template_role_package }}"
+#     state: present
+
+- name: Enable template_role_service
+  service:
+    name: "{{ template_role_service }}"
+    arguments: "{{ template_role_flags }}"
+    enabled: yes
+  notify:
+    - Restart template_role_service
