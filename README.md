@@ -1,5 +1,7 @@
 # `trombik.netplan`
 
+[![Build Status](https://travis-ci.com/trombik/ansible-role-netplan.svg?branch=master)](https://travis-ci.com/trombik/ansible-role-netplan)
+
 `ansible` role for `netplan`.
 
 # Requirements
