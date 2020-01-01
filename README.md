@@ -15,6 +15,7 @@
 | `netplan_config_dir` | Path to configuration directory | `{{ __netplan_config_dir }}` |
 | `netplan_config` | See below | `[]` |
 | `netplan_force_flush_handlers` | If true, flush all handlers at the end of role tasks | `false` |
+| `netplan_clean_config` | If true, remove any YAML files under `netplan_config_dir`, not managed by the role | `no` |
 
 ## `netplan_config`
 
