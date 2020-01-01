@@ -20,7 +20,6 @@
       when:
         - ansible_os_family == 'FreeBSD'
   vars:
-    netplan_clean_config: no
     netplan_force_flush_handlers: yes
     netplan_extra_packages:
       - bridge-utils
