@@ -16,6 +16,16 @@
 | `netplan_config` | See below | `[]` |
 | `netplan_force_flush_handlers` | If true, flush all handlers at the end of role tasks | `false` |
 
+## `netplan_config`
+
+This variable is a list of dict.
+
+| Key | Description | Required? |
+|-----|-------------|-----------|
+| `name` | File name | Yes |
+| `content` | The content of the file | No |
+| `state` | Create the file if `present`, delete if `absent` | Yes |
+
 ## Debian
 
 | Variable | Default |
