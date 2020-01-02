@@ -27,6 +27,80 @@ This variable is a list of dict.
 | `content` | The content of the file | No |
 | `state` | Create the file if `present`, delete if `absent` | Yes |
 
+## Using a variable as a key in a dict
+
+Often, you need to use variables as a key in `netplan_config`. However,
+`ansible` does not support variable substitution in dict key. As explained in
+[ansible 17324](https://github.com/ansible/ansible/issues/17324), it is
+possible to workaround the limitation by creating a string in `JSON` format.
+
+The following example does not work.
+
+```yaml
+foo: something
+bar: value
+buz:
+  "{{ foo }}": {{ bar }}
+```
+
+Instead, create a string in `JSON` format.
+
+```yaml
+bridge_name: br0
+my_content: |
+  {
+    "network": {
+      "version": "2",
+      "renderer": "networkd",
+      "ethernets": {
+        "eth2": {
+          "dhcp4": "no",
+          "dhcp6": "no"
+        },
+        "eth3": {
+          "dhcp4": "no",
+          "dhcp6": "no"
+          }
+      },
+      "bridges": {
+        "{{ bridge_name }}": {
+          "interfaces":
+            [ "eth2", "eth3" ],
+          "parameters": {
+            "stp": "no"
+          },
+          "dhcp4": "no",
+          "dhcp6": "no"
+        }
+      }
+    }
+  }
+```
+
+`my_content` is parsed as JSON and becomes:
+
+```yaml
+network:
+  bridges:
+    br0:
+      dhcp4: 'no'
+      dhcp6: 'no'
+      interfaces:
+      - eth2
+      - eth3
+      parameters:
+        stp: 'no'
+  ethernets:
+    eth2:
+      dhcp4: 'no'
+      dhcp6: 'no'
+    eth3:
+      dhcp4: 'no'
+      dhcp6: 'no'
+  renderer: networkd
+  version: '2'
+```
+
 ## Debian
 
 | Variable | Default |
